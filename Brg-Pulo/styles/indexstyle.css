@@ -1,353 +1,465 @@
-/* === ALL CSS === */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+/* === HIDE SCROLLBAR ON ALL ELEMENTS === */
+html, body {
+  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  overflow: auto;            /* Allow scrolling but hide bar */
+}
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+  display: none;
+}
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      line-height: 1.6;
-      color: #333;
-    }
+/* === RESET & BASICS === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  color: #222;
+  background: #f8fafc;
+  min-height: 100vh;
+}
 
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 0 20px;
-    }
+/* === CONTAINER === */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 20px;
+}
 
-    .navbar {
-      position: sticky;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: #002F87;
-      color: white;
-      padding: 15px 0;
-      z-index: 1000;
-      width: 100%;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      height: 70px;
-    }
+/* === NAVBAR === */
+.navbar {
+  position: sticky; top: 0; left: 0; right: 0;
+  background: #002F87;
+  color: white;
+  padding: 0;
+  z-index: 1000;
+  width: 100%;
+  min-height: 65px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.navbar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.18rem;
+  font-weight: bold;
+  letter-spacing: .3px;
+}
+.logo img {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  padding: 2px;
+}
+.navbar ul {
+  display: flex;
+  gap: 18px;
+  list-style: none;
+  transition: max-height .3s;
+}
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 4px;
+  transition: background .17s, color .17s;
+}
+.navbar a:hover,
+.navbar a.active {
+  background: #ffe600;
+  color: #002F87;
+}
 
-    .navbar .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+/* Hamburger menu */
+.hamburger {
+  display: none; flex-direction: column; gap: 5px; cursor: pointer; margin-left: 12px;
+}
+.hamburger span {
+  display: block;
+  height: 3px; width: 27px;
+  background: #fff; border-radius: 2px;
+  transition: .3s;
+}
 
-    .navbar ul {
-      display: flex;
-      list-style: none;
-      gap: 20px;
-    }
+/* Mobile Navbar */
+@media (max-width: 850px) {
+  .navbar ul {
+    position: absolute;
+    top: 65px;
+    left: 0; right: 0;
+    background: #002F87;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    max-height: 0;
+    overflow: hidden;
+    width: 100vw;
+    border-bottom: 1px solid #eaeaea;
+  }
+  .navbar ul.open { max-height: 260px; }
+  .navbar li { width: 100%; }
+  .navbar li a { padding: 1.2rem 0; display: block; width: 100%; }
+  .hamburger { display: flex; }
+}
 
-    .navbar a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
+/* === HERO === */
+.hero {
+  height: 320px;
+  background: url('../images/BrgHall.png') center/cover no-repeat;
+  position: relative;
+  border-bottom: 3px solid #ffe600;
+}
+.hero .overlay {
+  background: rgba(0,0,0,0.47);
+  height: 100%; width: 100%;
+  display: flex; justify-content: center; align-items: center;
+}
+.hero h1 {
+  color: #ffe600;
+  font-size: 2.3rem;
+  letter-spacing: 1px;
+  text-align: center;
+  text-shadow: 0 2px 12px #000a;
+}
+@media (max-width: 600px) {
+  .hero { height: 180px; }
+  .hero h1 { font-size: 1.18rem; }
+}
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
+/* === ANNOUNCEMENTS === */
+.announcements {
+  background: #fdf8e3;
+  padding: 45px 0 35px 0;
+  text-align: center;
+}
+.announcements h2 {
+  color: #f2b400;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+.cards {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 28px;
+}
+.card {
+  padding: 24px 20px 20px 20px;
+  width: 250px;
+  border-radius: 13px;
+  color: white;
+  box-shadow: 0 3px 18px 0 rgba(0,0,0,0.08);
+  transition: transform .15s, box-shadow .17s;
+  font-size: 1rem;
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+.card.yellow { background: #f7b400; }
+.card.red { background: #e84118; }
+.card.blue { background: #0097e6; }
+.card:hover { transform: translateY(-7px) scale(1.03); box-shadow: 0 6px 24px 0 rgba(0,0,0,0.14);}
+.card h3 { font-size: 1.13rem; margin-bottom: .5rem; }
+.card button {
+  margin-top: 10px;
+  background: white;
+  border: none;
+  color: #222;
+  padding: 9px 18px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background .14s, color .14s;
+  box-shadow: 0 1px 7px #0001;
+}
+.card button:hover { background: #fee600; color: #002F87; }
 
-    .logo img {
-      height: 40px;
-      width: 40px;
-      object-fit: contain;
-    }
+.more-btn {
+  margin-top: 19px;
+  background: #002F87;
+  color: white;
+  border: none;
+  padding: 11px 25px;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .17s;
+  box-shadow: 0 1px 5px #0002;
+}
+.more-btn:hover { background: #f7b400; color: #222; }
 
-    .hero {
-      height: 400px;
-      background: url('/images/BrgHall.png') center/cover no-repeat;
-      position: relative;
-    }
+/* === SERVICES === */
+.services {
+  background: #f0f0f0;
+  padding: 45px 0 38px 0;
+}
+.services h2 {
+  text-align: center;
+  margin-bottom: 33px;
+  font-size: 2rem;
+  color: #002F87;
+  letter-spacing: .4px;
+}
+.services .cards {
+  gap: 19px;
+}
+.service-card {
+  width: 250px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.09);
+  padding: 20px;
+  text-align: center;
+  transition: box-shadow .16s;
+}
+.service-card:hover { box-shadow: 0 2px 16px #0097e677; }
+.service-card button {
+  margin-top: 11px;
+  background: #002F87;
+  color: white;
+  padding: 10px 17px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background .17s;
+}
+.service-card button:hover { background: #f2b400; color: #222; }
 
-    .hero .overlay {
-      background: rgba(0, 0, 0, 0.5);
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+/* === ABOUT & WELCOME === */
+.about-welcome {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 58px 0 45px 0;
+  gap: 24px;
+  background: #fefefe;
+}
+.welcome {
+  flex: 1 1 320px;
+  min-width: 240px;
+  padding: 24px;
+}
+.welcome h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #002F87;
+  letter-spacing: .2px;
+}
+.logos {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.logos img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 9px;
+  background: #fff;
+  border: 2px solid #eee;
+}
 
-    .hero h1 {
-      color: #ffe600;
-      font-size: 2.5rem;
-      text-align: center;
-    }
+.about {
+  flex: 1 1 320px;
+  min-width: 240px;
+  padding: 36px 30px;
+  background-color: #002F87;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 13px;
+  box-shadow: 0 1px 7px #0001;
+}
+.about h2 {
+  font-size: 1.45rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+.about p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
 
-    .announcements {
-      background: #fdf8e3;
-      padding: 50px 20px;
-      text-align: center;
-    }
+@media (max-width: 800px) {
+  .about-welcome { flex-direction: column; gap: 18px; padding: 35px 0; }
+  .about, .welcome { min-width: unset; }
+}
 
-    .announcements h2 {
-      color: #f2b400;
-      font-size: 28px;
-    }
+/* === CONTACT === */
+.contact {
+  background: #fdeee6;
+  padding: 46px 0 37px 0;
+}
+.contact h2 {
+  color: #d35400;
+  text-align: center;
+  font-size: 2rem;
+}
+.contact-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  margin-top: 22px;
+}
+.contact-grid ul {
+  list-style: none;
+  font-size: 1.09rem;
+  color: #444;
+}
+.contact-grid ul li {
+  margin-bottom: 10px;
+  word-break: break-all;
+}
 
-    .cards {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 20px;
-    }
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 410px;
+  background: #fff;
+  padding: 18px 18px 16px 18px;
+  border-radius: 7px;
+  box-shadow: 0 1px 8px #0001;
+}
+form input, form textarea {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1.5px solid #ccc;
+  font-size: 1rem;
+}
+form input:focus, form textarea:focus { border: 1.5px solid #002F87; }
+form button {
+  background: #002F87;
+  color: white;
+  border: none;
+  padding: 11px;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background .17s;
+  cursor: pointer;
+}
+form button:hover { background: #f7b400; color: #222; }
 
-    .card {
-      padding: 20px;
-      width: 250px;
-      border-radius: 10px;
-      color: white;
-    }
+/* === FOOTER === */
+footer {
+  background: #002F87;
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 14px;
+  margin-top: 38px;
+  box-shadow: 0 -2px 6px #0001;
+}
 
-    .card.yellow { background: #f7b400; }
-    .card.red { background: #e84118; }
-    .card.blue { background: #0097e6; }
+/* === MODAL === */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1200;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.55);
+  align-items: center; justify-content: center;
+}
+.modal-content {
+  background: #fff;
+  padding: 28px 24px 22px 24px;
+  border-radius: 13px;
+  width: 90vw;
+  max-width: 440px;
+  margin: 100px auto 0 auto;
+  position: relative;
+  box-shadow: 0 8px 38px #002F8760;
+  animation: modalPop .22s cubic-bezier(.34,1.47,.63,1.07);
+}
+@keyframes modalPop {
+  0% { transform: scale(.92) translateY(16px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.close-btn {
+  position: absolute; top: 10px; right: 15px;
+  font-size: 1.7rem;
+  color: #aaa;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color .18s;
+}
+.close-btn:hover { color: #002F87; }
+.modal-content label {
+  display: block; margin-bottom: 4px; margin-top: 13px;
+  font-weight: 500; font-size: 1.01rem;
+}
+.modal-content input, .modal-content textarea, .modal-content select {
+  width: 100%;
+  padding: 10px;
+  margin: 7px 0 13px 0;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+.modal-content input:focus, .modal-content textarea:focus, .modal-content select:focus { border: 1.5px solid #002F87; }
+.modal-content button {
+  padding: 10px 0;
+  background: #0055a5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.07rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background .17s;
+}
+.modal-content button:hover { background: #f7b400; color: #222; }
 
-    .card button {
-      margin-top: 10px;
-      background: white;
-      border: none;
-      color: black;
-      padding: 10px;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.success-msg {
+  background: #d4edda;
+  color: #155724;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #c3e6cb;
+}
+.error-msg {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #f5c6cb;
+}
 
-    .more-btn {
-      margin-top: 20px;
-      background: #002F87;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-    }
-
-    .services {
-      background: #f0f0f0;
-      padding: 50px 20px;
-    }
-
-    .services h2 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .service-card {
-      width: 250px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      padding: 20px;
-      text-align: center;
-    }
-
-    .service-card button {
-      margin-top: 10px;
-      background: #002F87;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .about-welcome {
-      display: flex;
-      flex-wrap: wrap;
-      padding: 60px 20px;
-      gap: 20px;
-      background: #fefefe;
-    }
-
-    .welcome {
-      flex: 1;
-      min-width: 300px;
-      padding: 20px;
-    }
-
-    .welcome h2 {
-      font-size: 2rem;
-      margin-bottom: 20px;
-      color: #002F87;
-    }
-
-    .logos {
-      display: flex;
-      gap: 15px;
-      margin-top: 10px;
-    }
-
-    .logos img {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
-    }
-
-    .about {
-      flex: 1;
-      min-width: 300px;
-      padding: 40px 30px;
-      background-color: #002F87;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      border-radius: 10px;
-    }
-
-    .about h2 {
-      font-size: 26px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      margin-bottom: 15px;
-    }
-
-    .about p {
-      font-size: 16px;
-      line-height: 1.5;
-    }
-
-    .contact {
-      background: #fdeee6;
-      padding: 50px 20px;
-    }
-
-    .contact-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    .contact-grid ul {
-      list-style: none;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    form input, form textarea {
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    form button {
-      background: #002F87;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 5px;
-    }
-
-    footer {
-      background: #002F87;
-      color: white;
-      text-align: center;
-      padding: 15px;
-      font-size: 14px;
-    }
-
-    /* Floating Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-    }
-
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      margin: 100px auto;
-      position: relative;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-    }
-
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      margin: 100px auto;
-      position: relative;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 10px; right: 15px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .modal-content input, .modal-content textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-    }
-
-    .modal-content button {
-      padding: 10px 20px;
-      background-color: #0055a5;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .success-msg {
-      background: #d4edda;
-      color: #155724;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-    }
-
-    .error-msg {
-      background: #f8d7da;
-      color: #721c24;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-    }
+/* === RESPONSIVE BREAKPOINTS === */
+@media (max-width: 900px) {
+  .cards, .services .cards, .contact-grid { flex-direction: column; gap: 16px; }
+  .about-welcome { flex-direction: column; gap: 14px; }
+  .about, .welcome, .service-card, .card { min-width: unset; width: 96%; max-width: 390px; margin: 0 auto; }
+}
+@media (max-width: 600px) {
+  .about, .welcome { padding: 20px 10px; }
+  .about { padding: 25px 8px; }
+  .cards, .services .cards, .contact-grid { gap: 12px; }
+  .modal-content { padding: 13px 4vw; width: 98vw; }
+}

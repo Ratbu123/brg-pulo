@@ -17,8 +17,12 @@ $message = "";
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $name = $_POST['name'];
-  $date = $_POST['date']; // Comes from readonly field
+  $date = $_POST['date'];
+  $certificate = $_POST['certificate']; // Make sure your DB has this column, or remove this if not needed
 
+  // If you want to save certificate type, add it to your table and use the query below:
+  // $stmt = $conn->prepare("INSERT INTO request (name, date, certificate) VALUES (?, ?, ?)");
+  // $stmt->bind_param("sss", $name, $date, $certificate);
   $stmt = $conn->prepare("INSERT INTO request (name, date) VALUES (?, ?)");
   $stmt->bind_param("ss", $name, $date);
 
@@ -32,7 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $conn->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,16 +45,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <link rel="stylesheet" href="./styles/indexstyle.css" />
 </head>
 <body>
-
   <header class="navbar">
     <div class="container">
       <div class="logo">
-        <img src="./images/LipaLogo.png" alt="Barangay Logo" />
-        <img src="./images/OfficialSeal.png" alt="Barangay Logo" />
+        <img src="../Brg-Pulo/images/LipaLogo.png" alt="Barangay Logo" />
+        <img src="../Brg-Pulo/images/OfficialSeal.png" alt="Barangay Logo" />
         <span>Brgy. Bugtong na Pulo</span>
       </div>
       <nav>
-        <ul>
+        <div class="hamburger" id="navToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <ul id="navLinks">
           <li><a href="#home">Home</a></li>
           <li><a href="#announcements">Announcements</a></li>
           <li><a href="#services">Services</a></li>
@@ -67,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
   </section>
 
-  <section id="announcements" class="section announcements">
+  <section id="announcements" class="section announcements container">
     <h2>Announcements</h2>
     <div class="cards">
       <div class="card yellow">
@@ -89,17 +96,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <button class="more-btn">Show more</button>
   </section>
 
-  <section id="services" class="section services">
+  <section id="services" class="section services container">
     <h2>Services</h2>
     <div class="cards">
       <div class="service-card">
-        <h3>Emergency Hotline</h3>
-        <button onclick="openModal('Emergency Hotline')">View</button>
+        <h3>Request Documents</h3>
+        <button onclick="openModal('Emergency Hotline')">Request Now Here!</button>
       </div>
     </div>
   </section>
 
-  <section class="about-welcome">
+  <section class="about-welcome container">
     <div class="welcome">
       <h2>Welcome to <br> Brgy. Bugtong na Pulo</h2>
       <div class="logos">
@@ -114,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
   </section>
 
-  <section id="contact" class="section contact">
+  <section id="contact" class="section contact container">
     <h2>Contact Us</h2>
     <p>For inquiries or assistance, reach out using the details below or the form provided.</p>
     <div class="contact-grid">
@@ -141,44 +148,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
       <h3 id="formTitle">Service Request Form</h3>
-
       <?php echo $message; ?>
-
       <form action="" method="POST">
         <label for="name">Name</label>
-      <input type="text" id="name" name="name" required>
-
-      <label for="date">Date of Request</label>
-      <input type="date" id="date" name="date" value="<?php echo date('Y-m-d'); ?>" readonly>
-
-      <label for="certificate">Certificate Type</label>
-      <select id="certificate" name="certificate" required>
-        <option value="Certificate of indigency">Certificate of Indigency</option>
-        <option value="Certificate of residency">Certificate of Residency</option>
-      </select>
-
+        <input type="text" id="name" name="name" required>
+        <label for="date">Date of Request</label>
+        <input type="date" id="date" name="date" value="<?php echo date('Y-m-d'); ?>" readonly>
+        <label for="certificate">Certificate Type</label>
+        <select id="certificate" name="certificate" required>
+          <option value="Certificate of indigency">Certificate of Indigency</option>
+          <option value="Certificate of residency">Certificate of Residency</option>
+        </select>
         <button type="submit">Submit</button>
       </form>
     </div>
   </div>
 
-  <script>
-    function openModal(serviceName) {
-      document.getElementById('formTitle').innerText = serviceName + " Request Form";
-      document.getElementById('formModal').style.display = 'block';
-    }
-
-    function closeModal() {
-      document.getElementById('formModal').style.display = 'none';
-    }
-
-    window.onclick = function(event) {
-      const modal = document.getElementById('formModal');
-      if (event.target == modal) {
-        closeModal();
-      }
-    }
-  </script>
-
+  <script src="./scripts/main.js"></script>
 </body>
 </html>
