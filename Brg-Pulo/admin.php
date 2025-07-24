@@ -46,9 +46,6 @@
         <a data-section="add" tabindex="0">
           <i class="fas fa-house-user"></i> Add Residents
         </a>
-        <a data-section="hire" tabindex="0">
-          <i class="fas fa-briefcase"></i> Job Posting
-        </a>
         <a data-section="announce" tabindex="0">
           <i class="fas fa-bullhorn"></i> Announcement
         </a>
@@ -100,9 +97,6 @@
       </section>
       <section id="add" class="content-section">
         <?php include 'data/res-info.php'; ?>
-      </section>
-      <section id="hire" class="content-section">
-        <?php include 'data/hiring.php'; ?>
       </section>
       <section id="announce" class="content-section">
         <?php include 'data/announcements.php'; ?>

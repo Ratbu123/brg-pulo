@@ -39,6 +39,9 @@ $approved = ($approvedResult && $approvedResult->num_rows > 0) ? $approvedResult
 
 $jobs = $conn->query("SELECT COUNT(*) AS total FROM job_listings")->fetch_assoc()['total'] ?? 0;
 
+// ADD: Residents count
+$residentsResult = $conn->query("SELECT COUNT(*) AS total FROM `res-info`");
+$residents = $residentsResult && $residentsResult->num_rows > 0 ? $residentsResult->fetch_assoc()['total'] : 0;
 
 $recentRequests = $conn->query("SELECT * FROM request ORDER BY date DESC LIMIT 3");
 $allRequests = $conn->query("SELECT * FROM request ORDER BY date DESC");
@@ -49,7 +52,6 @@ $allRequests = $conn->query("SELECT * FROM request ORDER BY date DESC");
   <meta charset="UTF-8" />
   <title>Dashboard</title>
   <style>
-
     .cards {
       display: flex;
       justify-content: space-between;
@@ -60,7 +62,7 @@ $allRequests = $conn->query("SELECT * FROM request ORDER BY date DESC");
 
     .barangay-box {
       flex: 1;
-      min-width: 250px;
+      min-width: 220px;
       background-color: #fff;
       padding: 20px;
       border-radius: 12px;
@@ -206,6 +208,10 @@ $allRequests = $conn->query("SELECT * FROM request ORDER BY date DESC");
 <?php endif; ?>
 
 <div class="cards">
+  <div class="barangay-box">
+    <h3>No. of Residents</h3>
+    <h2><?= $residents ?></h2>
+  </div>
   <div class="barangay-box">
     <h3>No. of Officials</h3>
     <h2><?= $officials ?></h2>

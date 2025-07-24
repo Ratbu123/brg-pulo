@@ -13,49 +13,66 @@ $errorMsg = "";
 
 // Only process input if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Always check if each POST value is set
-    $fname = isset($_POST['fname']) ? $_POST['fname'] : '';
-    $lname = isset($_POST['lname']) ? $_POST['lname'] : '';
-    $mname = isset($_POST['mname']) ? $_POST['mname'] : '';
-    $age = isset($_POST['age']) ? $_POST['age'] : '';
-    $number = isset($_POST['number']) ? $_POST['number'] : '';
-    $c_status = isset($_POST['c-status']) ? $_POST['c-status'] : '';
-    $dob = isset($_POST['dob']) ? $_POST['dob'] : '';
-    $housen = isset($_POST['housen']) ? $_POST['housen'] : '';
-    $purok = isset($_POST['purok']) ? $_POST['purok'] : '';
+    $fname = trim($_POST['fname'] ?? '');
+    $lname = trim($_POST['lname'] ?? '');
+    $mname = trim($_POST['mname'] ?? '');
+    $age = trim($_POST['age'] ?? '');
+    $number = trim($_POST['number'] ?? '');
+    $c_status = trim($_POST['c-status'] ?? '');
+    $dob = trim($_POST['dob'] ?? '');
+    $housen = trim($_POST['housen'] ?? '');
+    $purok = trim($_POST['purok'] ?? '');
+    $gender = trim($_POST['gender'] ?? '');
 
     // Default image if none uploaded
-    $profile = "images/sub/usericon.png"; // path relative to project root
+    $profile = "images/sub/usericon.png";
+    $profileUploaded = false;
+    $uploads_dir = __DIR__ . '/../uploads/';
+    $allowed = ['jpg','jpeg','png','gif','webp'];
+    $maxFileSize = 2 * 1024 * 1024; // 2MB
 
     // If image uploaded
-    if (isset($_FILES['profile']) && $_FILES['profile']['error'] == 0) {
-        $uploads_dir = __DIR__ . '/../uploads/';
-        if (!file_exists($uploads_dir)) {
-            mkdir($uploads_dir, 0777, true);
-        }
+    if (isset($_FILES['profile']) && $_FILES['profile']['error'] === 0) {
+        if (!file_exists($uploads_dir)) mkdir($uploads_dir, 0777, true);
         $filename = basename($_FILES["profile"]["name"]);
-        $target_file = $uploads_dir . $filename;
-        $img_ext = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        $allowed = ['jpg','jpeg','png','gif','webp'];
-
-        if (in_array($img_ext, $allowed) && move_uploaded_file($_FILES["profile"]["tmp_name"], $target_file)) {
-            // Save relative path for use in <img src="">
-            $profile = "uploads/" . $filename;
+        $img_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $size = $_FILES["profile"]["size"];
+        if (!in_array($img_ext, $allowed)) {
+            $errorMsg = "Only image files (jpg, jpeg, png, gif, webp) allowed.";
+        } elseif ($size > $maxFileSize) {
+            $errorMsg = "Image must be less than 2MB.";
+        } else {
+            // Prevent file name collision
+            $base = pathinfo($filename, PATHINFO_FILENAME);
+            $uniqueFilename = $filename;
+            $i = 1;
+            while (file_exists($uploads_dir . $uniqueFilename)) {
+                $uniqueFilename = $base . "_$i.$img_ext";
+                $i++;
+            }
+            if (move_uploaded_file($_FILES["profile"]["tmp_name"], $uploads_dir . $uniqueFilename)) {
+                $profile = "uploads/" . $uniqueFilename;
+                $profileUploaded = true;
+            } else {
+                $errorMsg = "Error uploading the image.";
+            }
         }
     }
 
     // Insert to DB
-    $stmt = $conn->prepare("INSERT INTO `res-info` (fname, lname, mname, age, number, `c-status`, dob, profile, housen, purok) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssssss", $fname, $lname, $mname, $age, $number, $c_status, $dob, $profile, $housen, $purok);
-
-    if ($stmt->execute()) {
-        // Show JS alert then redirect to admin page
-        echo "<script>alert('Resident added successfully!'); window.location.href='../brg-pulo/Brg-Pulo/admin.php';</script>";
-        exit;
-    } else {
-        $errorMsg = "Error: " . $stmt->error;
+    if (empty($errorMsg)) {
+        $stmt = $conn->prepare("INSERT INTO `res-info` (fname, lname, mname, age, number, `c-status`, dob, profile, housen, purok, gender)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssssss", $fname, $lname, $mname, $age, $number, $c_status, $dob, $profile, $housen, $purok, $gender);
+        if ($stmt->execute()) {
+            $successMsg = "Resident added successfully!";
+            // Reset POST after success
+            $_POST = [];
+        } else {
+            $errorMsg = "Error: " . $stmt->error;
+        }
+        $stmt->close();
     }
-    $stmt->close();
 }
 ?>
 <!DOCTYPE html>
@@ -89,6 +106,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php if (!empty($errorMsg)): ?>
         <div class="message error"><?= htmlspecialchars($errorMsg) ?></div>
     <?php endif; ?>
+    <?php if (!empty($successMsg)): ?>
+        <div class="message success"><?= htmlspecialchars($successMsg) ?></div>
+    <?php endif; ?>
 
     <form action="" method="POST" enctype="multipart/form-data" autocomplete="off">
         <div class="form-header">
@@ -97,37 +117,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="form-grid">
             <div class="image-upload-section">
                 <div id="preview-container">
-                    <img id="preview-image" src="/Brg-Pulo/images/sub/usericon.png" alt="Preview">
+                    <img id="preview-image"
+                        src="<?php
+                            if (!empty($successMsg) || (!isset($_POST['profile']) && empty($_POST))) {
+                                echo '/Brg-Pulo/images/sub/usericon.png';
+                            } elseif (!empty($_FILES['profile']['tmp_name']) && empty($errorMsg)) {
+                                echo isset($profile) ? '/' . $profile : '/Brg-Pulo/images/sub/usericon.png';
+                            } else {
+                                echo '/Brg-Pulo/images/sub/usericon.png';
+                            }
+                        ?>"
+                        alt="Preview">
                 </div>
                 <input type="file" name="profile" accept="image/*" onchange="previewImage(event)">
             </div>
             <div class="form-fields-section">
-                <input type="text" name="fname" placeholder="First Name" required>
-                <input type="text" name="lname" placeholder="Last Name" required>
-                <input type="text" name="mname" placeholder="Middle Name" required>
-                <input type="number" name="age" placeholder="Age" required>
-                <input type="text" name="number" placeholder="Contact Number" required>
+                <input type="text" name="fname" placeholder="First Name" required value="<?= htmlspecialchars($_POST['fname'] ?? '') ?>">
+                <input type="text" name="lname" placeholder="Last Name" required value="<?= htmlspecialchars($_POST['lname'] ?? '') ?>">
+                <input type="text" name="mname" placeholder="Middle Name" required value="<?= htmlspecialchars($_POST['mname'] ?? '') ?>">
+                <input type="number" name="age" placeholder="Age" required value="<?= htmlspecialchars($_POST['age'] ?? '') ?>">
+                <input type="text" name="number" placeholder="Contact Number" required value="<?= htmlspecialchars($_POST['number'] ?? '') ?>">
                 <label>Civil Status:
                     <select name="c-status" required>
                         <option value="">Select Status</option>
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Widowed">Widowed</option>
-                        <option value="Separated">Separated</option>
+                        <option value="Single" <?= (isset($_POST['c-status']) && $_POST['c-status']=='Single')?'selected':''; ?>>Single</option>
+                        <option value="Married" <?= (isset($_POST['c-status']) && $_POST['c-status']=='Married')?'selected':''; ?>>Married</option>
+                        <option value="Widowed" <?= (isset($_POST['c-status']) && $_POST['c-status']=='Widowed')?'selected':''; ?>>Widowed</option>
+                        <option value="Separated" <?= (isset($_POST['c-status']) && $_POST['c-status']=='Separated')?'selected':''; ?>>Separated</option>
                     </select>
                 </label>
                 <label>Date of Birth:
-                    <input type="date" name="dob" required>
+                    <input type="date" name="dob" required value="<?= htmlspecialchars($_POST['dob'] ?? '') ?>">
                 </label>
-                <input type="text" name="housen" placeholder="House Number" required>
+                <input type="text" name="housen" placeholder="House Number" required value="<?= htmlspecialchars($_POST['housen'] ?? '') ?>">
                 <label>Purok:
                     <select name="purok" required>
                         <option value="">Select Purok</option>
-                        <option value="Purok 1">Purok 1</option>
-                        <option value="Purok 2">Purok 2</option>
-                        <option value="Purok 3">Purok 3</option>
-                        <option value="Purok 4">Purok 4</option>
-                        <option value="Purok 5">Purok 5</option>
+                        <option value="Purok 1" <?= (isset($_POST['purok']) && $_POST['purok']=='Purok 1')?'selected':''; ?>>Purok 1</option>
+                        <option value="Purok 2" <?= (isset($_POST['purok']) && $_POST['purok']=='Purok 2')?'selected':''; ?>>Purok 2</option>
+                        <option value="Purok 3" <?= (isset($_POST['purok']) && $_POST['purok']=='Purok 3')?'selected':''; ?>>Purok 3</option>
+                        <option value="Purok 4" <?= (isset($_POST['purok']) && $_POST['purok']=='Purok 4')?'selected':''; ?>>Purok 4</option>
+                        <option value="Purok 5" <?= (isset($_POST['purok']) && $_POST['purok']=='Purok 5')?'selected':''; ?>>Purok 5</option>
+                    </select>
+                </label>
+                <label>Gender:
+                    <select name="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male" <?= (isset($_POST['gender']) && $_POST['gender']=='Male')?'selected':''; ?>>Male</option>
+                        <option value="Female" <?= (isset($_POST['gender']) && $_POST['gender']=='Female')?'selected':''; ?>>Female</option>
+                        <option value="Other" <?= (isset($_POST['gender']) && $_POST['gender']=='Other')?'selected':''; ?>>Other</option>
                     </select>
                 </label>
                 <button type="submit">Add Resident</button>
